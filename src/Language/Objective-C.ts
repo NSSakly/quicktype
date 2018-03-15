@@ -725,12 +725,10 @@ class ObjectiveCRenderer extends ConvenienceRenderer {
         this.ensureBlankLine();
 
         this.emitMethod("- (id)initWithCoder:(NSCoder *)aDecoder ", () => {
-            this.indent(() => {
-                this.emitLine("if(self = [super init]) {");
+            this.emitBlock("if (self = [super init])", () => {
                 this.forEachClassProperty(t, "none", (name, jsonName) =>
-                       this.emitLine(`self.`,stringEscape(jsonName),` = [aDecoder decodeObjectForKey:@"`,name,`_key"];`)
+                    this.emitLine(`self.`,stringEscape(jsonName),` = [aDecoder decodeObjectForKey:@"`,name,`_key"];`)
                 );
-                this.emitLine("}");
             });
             this.emitLine("return self;");
         });
