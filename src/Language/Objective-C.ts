@@ -714,6 +714,27 @@ class ObjectiveCRenderer extends ConvenienceRenderer {
             });
             return [irregular, unsafe];
         })();
+        
+        this.emitMethod("- (void)encodeWithCoder:(NSCoder *)aCoder ", () => {
+            this.indent(() => {
+                this.forEachClassProperty(t, "none", (name, jsonName) =>
+                       this.emitLine(`[aCoder encodeObject:self.`,stringEscape(jsonName),` forKey:@"`,name,`_key"];`)
+                );
+            });
+        });
+        this.ensureBlankLine();
+
+        this.emitMethod("- (id)initWithCoder:(NSCoder *)aDecoder ", () => {
+            this.indent(() => {
+                this.emitLine("if(self = [super init]) {");
+                this.forEachClassProperty(t, "none", (name, jsonName) =>
+                       this.emitLine(`self.`,stringEscape(jsonName),` = [aDecoder decodeObjectForKey:@"`,name,`_key"];`)
+                );
+                this.emitLine("}");
+            });
+            this.emitLine("return self;");
+        });
+        this.ensureBlankLine();
 
         this.emitLine("@implementation ", className);
         if (!this._justTypes) {
